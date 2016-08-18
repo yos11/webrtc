@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <script>
+
+  navigator.getUserMedia = navigator.getUserMedia ||
+                           navigator.webkitGetUserMedia ||
+                           navigator.mozGetUserMedia;
+  window.RTCPeerConnection = window.RTCPeerConnection ||
+                             window.webkitRTCPeerConnection ||
+                             window.mozRTCPeerConnection;
+  window.RTCSessionDescription = window.RTCSessionDescription ||
+                                 window.mozRTCSessionDescription;
+  window.RTCIceCandidate = window.RTCIceCandidate ||
+                           window.mozRTCIceCandidate;
+
+
+var port = 8088;
+//var signalingChannel = io.connect('https://localhost:' + port + '/');
+var signalingChannel = io.connect('https://192.168.20.51:' + port + '/');
+var pc;
+
+function start(){
+
+//  pc = new RTCPeerConnection(ice);
+//  pc = new RTCPeerConnection(null);
+
+
+}
+
+
+</script>
+
+  <body>
+
+        <input type="button" id="btnConnect" value="接続" onclick="start()" />
+        <textarea id="log"></textarea>
+    test
+  </body>
+</html>

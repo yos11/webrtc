@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <input type="button" id="btnConnect" value="接続" onclick="start()" />
+<!--
+    <video id="local_video" width="200" height="150" autoplay></video>
+    <video id="remote_video" width="200" height="150" autoplay></video>
+  -->
+    <script src="js/jquery-1.12.3.min.js" ></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+    navigator.getUserMedia = navigator.getUserMedia ||
+                             navigator.webkitGetUserMedia ||
+                             navigator.mozGetUserMedia;
+    window.RTCPeerConnection = window.RTCPeerConnection ||
+                               window.webkitRTCPeerConnection ||
+                               window.mozRTCPeerConnection;
+    window.RTCSessionDescription = window.RTCSessionDescription ||
+                                   window.mozRTCSessionDescription;
+    window.RTCIceCandidate = window.RTCIceCandidate ||
+                             window.mozRTCIceCandidate;
+
+   var myAdress = location.protocol + "//" + location.host;
+   var signalingChannel = io.connect( myAdress + '/');
+
+var pc;
+
+function start(){
+
+//  pc = new RTCPeerConnection(ice);
+  pc = new RTCPeerConnection(null);
+
+  pc.onicecandidate = (evt) => {
+    if (evt.candidate) {
+        // send via socket
+      signalingChannel.json.send(evt.candidate);
+
+    } else {
+      console.log("End of candidates. ------------------- phase=" + evt.eventPhase);
+    }
+  };
+
+  pc.onnegotiationneeded = () => {
+    pc.createOffer(localDescCreated, logError);
+  }
+/*
+  pc.onaddstream = (evt) => {
+    var remote_video = $('#remote_video')[0];
+    remote_video.src = URL.createObjectURL(evt.stream);
+  }
+*/
+  navigator.getUserMedia({ "audio":true, "video":true }, (stream) => {
+//    var local_video = $('#local_video')[0];
+//    local_video.src = URL.createObjectURL(stream);
+    pc.addStream(stream);
+  }, logError);
+
+}
+
+function localDescCreated(desc) {
+  pc.setLocalDescription(desc, () => {
+  	signalingChannel.json.send(pc.localDescription);
+  }, logError);
+}
+
+signalingChannel.on('connect', onOpened)
+                .on('message', onMessage);
+
+function onOpened(evt) {
+  socketReady = true;
+}
+
+// socket: accept connection request
+function onMessage(evt) {
+
+  if (!pc)
+   start();
+
+   if (evt.sdp){
+     pc.setRemoteDescription(new RTCSessionDescription(evt), function () {
+       // if we received an offer, we need to answer
+       if (pc.remoteDescription.type == "offer"){
+         pc.createAnswer(localDescCreated, logError);
+       }
+     }, logError);
+   }  else {
+     pc.addIceCandidate(new RTCIceCandidate(evt));
+   }
+
+}
+
+function logError(error) {
+  console.log("error:");
+  console.log(error);
+}
+
+    </script>
+  </body>
+</html>
