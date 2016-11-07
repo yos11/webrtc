@@ -60,10 +60,40 @@ function start(){
     pc.addStream(stream);
   }, logError);
 
+///////////////////////  
+  
+  
+  
+//var selector = pc.getLocalStreams()[0].getAudioTracks()[0];
+var selector = pc.getLocalStreams();
+var selector = pc.getRemoteStreams();
+                                               console.log("Media stream selector is "+selector);
+                                               console.log(selector);
+                                                //var connection = voxbone.WebRTC.rtcSession.connection;
+                                                console.log("peer connection object is "+pc);
+                                                pc.getStats(selector, function(report) {
+                                                                                console.log("we are into business of stats");
+                                                                                for (var i in report) {
+                                                                                        var now  = report[i];
+                                                                                        console.log("RTCP report of type "+now.type);
+                                                                                }
+                                                                        },
+                                                                        function(error) {
+                                                                                console.error("name :"+ error.name+ " message: "+ error.message);
+                                                                        });
+
+
+  
+  
+  
+  
+  
+//////////////////////  
 }
 
 function localDescCreated(desc) {
   pc.setLocalDescription(desc, () => {
+    console.log(pc.localDescription);
   	signalingChannel.json.send(pc.localDescription);
   }, logError);
 }
@@ -99,6 +129,66 @@ function logError(error) {
   console.log(error);
 }
 
+
+function myFunction() {
+    setTimeout(alertFunc, 1000);
+}
+
+function alertFunc() {
+//    console.log("Hello!");
+	if(!!pc){
+		//console.log(pc);
+//		console.log(pc.getStats());
+	}
+
+	myFunction();
+}
+//myFunction();
+/*
+function getStats(peer) {
+    myGetStats(peer, function (results) {
+        for (var i = 0; i < results.length; ++i) {
+            var res = results[i];
+            console.log(res);
+        }
+
+        setTimeout(function () {
+            getStats(peer);
+        }, 1000);
+    });
+}
+getStats(pc);
+
+function myGetStats(peer, callback) {
+    if (!!navigator.mozGetUserMedia) {
+        peer.getStats(
+            function (res) {
+                var items = [];
+                res.forEach(function (result) {
+                    items.push(result);
+                });
+                callback(items);
+            },
+            callback
+        );
+    } else {
+        peer.getStats(function (res) {
+            var items = [];
+            res.result().forEach(function (result) {
+                var item = {};
+                result.names().forEach(function (name) {
+                    item[name] = result.stat(name);
+                });
+                item.id = result.id;
+                item.type = result.type;
+                item.timestamp = result.timestamp;
+                items.push(item);
+            });
+            callback(items);
+        });
+    }
+};
+*/
     </script>
   </body>
 </html>
