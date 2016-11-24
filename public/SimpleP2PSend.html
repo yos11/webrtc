@@ -39,6 +39,8 @@ function start(){
     if (evt.candidate) {
         // send via socket
       signalingChannel.json.send(evt.candidate);
+	  
+
 
     } else {
       console.log("End of candidates. ------------------- phase=" + evt.eventPhase);
@@ -65,6 +67,21 @@ function start(){
   
   
 //var selector = pc.getLocalStreams()[0].getAudioTracks()[0];
+
+pc.getStats(function(res){
+	var StatsResult = res.result();
+	var ResultCount = StatsResult.length;
+	console.log( "res:" );
+	console.log( res );	
+	console.log( "Stats:" );
+	console.log( StatsResult[0] );
+	console.log( "names:" );
+	console.log( StatsResult[0].names() );	
+	console.log( "googInitiator:" );
+	console.log( StatsResult[0].stat("googInitiator") );	
+});
+
+/*
 var selector = pc.getLocalStreams();
 var selector = pc.getRemoteStreams();
                                                console.log("Media stream selector is "+selector);
@@ -81,7 +98,7 @@ var selector = pc.getRemoteStreams();
                                                                         function(error) {
                                                                                 console.error("name :"+ error.name+ " message: "+ error.message);
                                                                         });
-
+*/
 
   
   
